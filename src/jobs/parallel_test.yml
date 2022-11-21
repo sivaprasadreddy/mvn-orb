@@ -1,0 +1,86 @@
+description: |
+  Checkout, build, test, and upload test results for a Maven project spreading tests across multiple nodes
+executor: << parameters.executor >>
+parallelism: << parameters.parallelism >>
+parameters:
+  executor:
+    description: The name of custom executor to use
+    type: executor
+    default: default
+  app_src_directory:
+    description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
+    type: string
+    default: ""
+  command:
+    description: The maven command to run.
+    type: string
+    default: verify
+  settings_file:
+    description: Specify a custom settings file to use (optional)
+    type: string
+    default: ""
+  maven_command:
+    description: Specify a custom path for invoking maven
+    type: string
+    default: mvn
+  test_results_path:
+    description: The path to the test results.
+    type: string
+    default: target/surefire-reports
+  parallelism:
+    description: How many nodes should testing be split across?
+    type: integer
+    default: 2
+  parallel_test_pattern:
+    description: |
+      This is the standard Surefire pattern, but you can override
+      if you use alternate <includes> patterns in your pom.xml
+    type: string
+    default: "**/*Test*.java"
+  parallel_it_pattern:
+    description: |
+      This is the standard Failsafe pattern, but you can override
+      if you use alternate <includes> patterns in your pom.xml.
+    type: string
+    default: "**/*IT*.java"
+  test_directory:
+    description: If following standard maven conventions this does not need to be changed.
+    type: string
+    default: "src/test/java"
+  verify_dependencies:
+    description: Verify dependencies are valid and available from public sources
+    type: boolean
+    default: true
+  dependency_plugin_version:
+    description: Specify the Maven Dependency Plugin
+    type: string
+    default: "3.1.2"
+
+steps:
+  - checkout
+  - run:
+      name: Enable Test Splitting
+      environment:
+        PARAM_TEST_DIR: << parameters.test_directory >>
+        PARAM_TEST_PATTERN: << parameters.parallel_test_pattern >>
+        PARAM_IT_PATTERN: << parameters.parallel_it_pattern >>
+      command: << include(scripts/enable-test-splitting.sh) >>
+  - store_artifacts:
+      path: .circleci/tests/
+  - with_cache:
+      settings_file: << parameters.settings_file >>
+      app_src_directory: << parameters.app_src_directory >>
+      maven_command: << parameters.maven_command >>
+      dependency_plugin_version: << parameters.dependency_plugin_version >>
+      verify_dependencies: << parameters.verify_dependencies >>
+      steps:
+        - run:
+            name: Run Tests
+            working_directory: << parameters.app_src_directory >>
+            environment:
+              PARAM_MVN_COMMAND: << parameters.maven_command >>
+              PARAM_COMMAND: << parameters.command >>
+              PARAM_SETTINGS_FILE: << parameters.settings_file >>
+            command: << include(scripts/run-parallel-tests.sh) >>
+  - process_test_results:
+      test_results_path: << parameters.test_results_path >>

@@ -1,12 +1,12 @@
-description: >
-  This is a sample executor using Docker and Node. If you want to provide a custom environment in your orb, insert your image here.
-  If you do not require an executor, you can simply delete this directory.
+# How to author Executors: https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
+description: |
+  The latest minor and patch update of the version 17 JDK image provided by CircleCI.
 docker:
-  - image: 'cimg/node:<<parameters.tag>>'
+  - image: "cimg/openjdk:<<parameters.tag>>"
 parameters:
   tag:
-    default: lts
-    description: >
-      Pick a specific cimg/node image variant:
-      https://hub.docker.com/r/cimg/node/tags
+    default: "17.0"
+    description: |
+      Can be changed to any of the available tags listed on the DockerHub for this image.
+      https://hub.docker.com/r/cimg/openjdk/tags
     type: string

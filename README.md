@@ -1,39 +1,35 @@
-# Orb Template
+# Mvn Orb [![CircleCI Build Status](https://circleci.com/gh/sivaprasadreddy/mvn-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/sivaprasadreddy/mvn-orb) [![CircleCI Orb Version](https://badges.circleci.com/orbs/circleci/maven.svg)](https://circleci.com/orbs/registry/orb/circleci/maven) [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/sivaprasadreddy/mvn-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
+Simplify common tasks for building and testing Java projects using Maven on CircleCI. Your entire CircleCI config could look like this:
 
+```
+version: 2.1
+orbs:
+  mvn: sivaprasadreddy/mvn-orb@x.y
+workflows:
+  maven_test:
+    jobs:
+      - maven/test
+```
 
-[![CircleCI Build Status](https://circleci.com/gh/sivaprasadreddy/mvn-orb.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/sivaprasadreddy/mvn-orb) [![CircleCI Orb Version](https://badges.circleci.com/orbs/sivaprasadreddy/mvn-orb.svg)](https://circleci.com/orbs/registry/orb/sivaprasadreddy/mvn-orb) [![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/sivaprasadreddy/mvn-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
+The built in test job is automatically compatible with standard Maven projects and is fully customizable with custom steps.
 
+## Usage
 
+Example use-cases are provided on the orb [registry page](https://circleci.com/orbs/registry/orb/circleci/maven#usage-examples). Source for these examples can be found within the `src/examples` directory.
 
-A project template for Orbs.
-
-This repository is designed to be automatically ingested and modified by the CircleCI CLI's `orb init` command.
-
-_**Edit this area to include a custom title and description.**_
-
----
 
 ## Resources
 
-[CircleCI Orb Registry Page](https://circleci.com/orbs/registry/orb/sivaprasadreddy/mvn-orb) - The official registry page of this orb for all versions, executors, commands, and jobs described.
+[CircleCI Orb Registry Page](https://circleci.com/orbs/registry/orb/circleci/maven) - The official registry page of this orb for all versions, executors, commands, and jobs described.  
+[CircleCI Orb Docs](https://circleci.com/docs/2.0/orb-intro/#section=configuration) - Docs for using and creating CircleCI Orbs.  
 
-[CircleCI Orb Docs](https://circleci.com/docs/2.0/orb-intro/#section=configuration) - Docs for using, creating, and publishing CircleCI Orbs.
-
-### How to Contribute
+### How To Contribute
 
 We welcome [issues](https://github.com/sivaprasadreddy/mvn-orb/issues) to and [pull requests](https://github.com/sivaprasadreddy/mvn-orb/pulls) against this repository!
 
-### How to Publish An Update
-1. Merge pull requests with desired changes to the main branch.
-    - For the best experience, squash-and-merge and use [Conventional Commit Messages](https://conventionalcommits.org/).
-2. Find the current version of the orb.
-    - You can run `circleci orb info sivaprasadreddy/mvn-orb | grep "Latest"` to see the current version.
-3. Create a [new Release](https://github.com/sivaprasadreddy/mvn-orb/releases/new) on GitHub.
-    - Click "Choose a tag" and _create_ a new [semantically versioned](http://semver.org/) tag. (ex: v1.0.0)
-      - We will have an opportunity to change this before we publish if needed after the next step.
-4.  Click _"+ Auto-generate release notes"_.
-    - This will create a summary of all of the merged pull requests since the previous release.
-    - If you have used _[Conventional Commit Messages](https://conventionalcommits.org/)_ it will be easy to determine what types of changes were made, allowing you to ensure the correct version tag is being published.
-5. Now ensure the version tag selected is semantically accurate based on the changes included.
-6. Click _"Publish Release"_.
-    - This will push a new tag and trigger your publishing pipeline on CircleCI.
+To publish a new production version:
+* Create a PR to the `Alpha` branch with your changes. This will act as a "staging" branch.
+* When ready to publish a new production version, create a PR from `Alpha` to `master`. The Git Subject should include `[semver:patch|minor|release|skip]` to indicate the type of release.
+* On merge, the release will be published to the orb registry automatically.
+
+For further questions/comments about this or other orbs, visit the Orb Category of [CircleCI Discuss](https://discuss.circleci.com/c/orbs).

@@ -1,0 +1,59 @@
+# How to author commands: https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands
+description: |
+  Run a set of steps with Maven dependencies cached.
+
+  This command will first restore a cache of maven dependencies, if one was
+  saved by a previous build. The provided `steps` parameter will then be executed, and
+  if successful, then a fresh cache will be saved, if required.
+
+  The contents of the `~/.m2/repository` directory is cached, which will substantially
+  improve build times for projects with many dependencies.
+
+  The cache-key is generated from any files named `pom.xml` that are
+  present in the `working_directory`.
+parameters:
+  settings_file:
+    description: Specify a custom settings file to use (optional)
+    type: string
+    default: ""
+  steps:
+    type: steps
+  maven_command:
+    description: Specify a custom path for invoking maven
+    type: string
+    default: mvn
+  app_src_directory:
+    description: Useful when the source of your maven project is nott in the root directory of your git repo. Supply the name of the directory or relative path of the directory containing your source code.
+    type: string
+    default: ""
+  verify_dependencies:
+    description: Verify dependencies are valid and available from public sources
+    type: boolean
+    default: true
+  dependency_plugin_version:
+    description: Specify the Maven Dependency Plugin
+    type: string
+    default: "3.1.2"
+steps:
+  - run:
+      name: Generate Cache Checksum
+      working_directory: << parameters.app_src_directory >>
+      command: << include(scripts/gen-cache-checksum.sh) >>
+  - restore_cache:
+      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+  - when:
+      condition: << parameters.verify_dependencies >>
+      steps:
+        - run:
+            environment:
+              PARAM_SETTINGS_FILE: << parameters.settings_file >>
+              PARAM_MVN_COMMAND: << parameters.maven_command >>
+              PARAM_DEP_PLUGIN_VER: << parameters.dependency_plugin_version >>
+            name: Verify dependencies
+            working_directory: << parameters.app_src_directory >>
+            command: << include(scripts/verify.sh) >>
+  - steps: << parameters.steps >>
+  - save_cache:
+      paths:
+        - ~/.m2/repository
+      key: maven-{{ checksum "/tmp/maven_cache_seed" }}
