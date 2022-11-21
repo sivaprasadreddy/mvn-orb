@@ -12,11 +12,19 @@ mkdir -p .circleci/tests/
 circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_TEST_PATTERN" | \
     sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.(java|kt)#\1#" | \
     tr "/" "." > .circleci/tests/surefire_classnames
-circleci tests split --split-by=timings --timings-type=classname < .circleci/tests/surefire_classnames > /tmp/this_node_tests 
-grep -xvf /tmp/this_node_tests < .circleci/tests/surefire_classnames > .circleci/tests/surefire_classnames_ignore_list 
+echo "generate excluded surefire tests command exit status: $?"
+circleci tests split --split-by=timings --timings-type=classname < .circleci/tests/surefire_classnames > /tmp/this_node_tests
+echo "surefire test split command exit status: $?"
+
+grep -xvf /tmp/this_node_tests < .circleci/tests/surefire_classnames > .circleci/tests/surefire_classnames_ignore_list
+echo "write surefire_classnames_ignore_list command exit status: $?"
 # generate excluded failsafe tests using provided pattern
 circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_IT_PATTERN" | \
     sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.(java|kt)#\1#" | \
     tr "/" "." > .circleci/tests/failsafe_classnames
+echo "generate excluded failsafe tests command exit status: $?"
 circleci tests split --split-by=timings --timings-type=classname < .circleci/tests/failsafe_classnames > /tmp/this_node_it_tests
+echo "failsafe test split command exit status: $?"
+
 grep -xvf /tmp/this_node_it_tests < .circleci/tests/failsafe_classnames > .circleci/tests/failsafe_classnames_ignore_list
+echo "write failsafe_classnames_ignore_list command exit status: $?"
