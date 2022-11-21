@@ -10,7 +10,7 @@ echo -e "\033[31m\033[4mOrb Notes on Test Splitting\033[0m
 mkdir -p .circleci/tests/
 echo "PARAM_TEST_PATTERN: $PARAM_TEST_PATTERN"
 # generate excluded surefire tests using provided pattern
-circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_TEST_PATTERN" | \
+circleci tests glob "${PARAM_TEST_DIR}/${PARAM_TEST_PATTERN}" | \
     sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.(java|kt)#\1#" | \
     tr "/" "." > .circleci/tests/surefire_classnames
 echo "generate excluded surefire tests command exit status: $?"
@@ -26,7 +26,7 @@ echo "write surefire_classnames_ignore_list command exit status: $?"
 
 echo "PARAM_IT_PATTERN: $PARAM_IT_PATTERN"
 # generate excluded failsafe tests using provided pattern
-circleci tests glob "$PARAM_TEST_DIR"/"$PARAM_IT_PATTERN" | \
+circleci tests glob "${PARAM_TEST_DIR}/${PARAM_IT_PATTERN}" | \
     sed -e "s#^$PARAM_TEST_DIR/\(.*\)\.(java|kt)#\1#" | \
     tr "/" "." > .circleci/tests/failsafe_classnames
 echo "generate excluded failsafe tests command exit status: $?"
