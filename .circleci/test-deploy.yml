@@ -23,7 +23,7 @@ workflows:
           requires:
             - orb-tools/pack
             - maven/test
-          context: orb-publisher
+          context: orb-publishing
           filters:
             branches:
               ignore: /.*/
